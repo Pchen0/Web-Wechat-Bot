@@ -70,7 +70,8 @@ function updateGPTConfig(configName, configValue) {
         if (err) {
             console.error('更新数据失败:', err);
         }
-    });
+        loadConfigValues()
+    })
 }
 
 module.exports = { updateGPTConfig, sendMessageToAPI }
