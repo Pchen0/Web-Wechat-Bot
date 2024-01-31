@@ -25,7 +25,7 @@ router.use(express.static('./public'))
 // 定义中间件.unless指定哪些接口不需要进行token身份认证
 const { expressjwt: jwt } = require("express-jwt")
 const checkTokenMiddleware = jwt({ secret: secretKey, algorithms: ["HS256"] }).unless({
-    path: [/^\/userlogin/, /^\/register/],
+    path: [/^\/userlogin/, /^\/register/, /^\/getavatar/],
 })
 
 // 验证token
