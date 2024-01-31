@@ -73,4 +73,4 @@ function updateGPTConfig(configName, configValue) {
     });
 }
 
-module.exports = {updateGPTConfig }
+module.exports = { updateGPTConfig, sendMessageToAPI }
