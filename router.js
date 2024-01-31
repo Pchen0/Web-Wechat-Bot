@@ -1,5 +1,5 @@
 const express = require('express')
-const { sendMessageToAPI, setApiKey, setApiUrl, setapp_code ,setmodel} = require('./wechat/ChatGPT')
+const { updateGPTConfig } = require('./wechat/ChatGPT')
 const sqlite3 = require('sqlite3')
 const jsonwebtoken = require('jsonwebtoken')
 const path = require('path')
@@ -19,6 +19,8 @@ let sqliteDbPath = "./db/data.db"
 var db = new sqlite3.Database(sqliteDbPath)
 
 const router = express.Router()
+
+router.use(express.static('./public'))
 
 // 定义中间件.unless指定哪些接口不需要进行token身份认证
 const { expressjwt: jwt } = require("express-jwt")
@@ -178,10 +180,10 @@ router.post('/getapiconfig', async (req, res) => {
 router.post('/apiconfig',async(req,res) => {
     const { apiKey,apiUrl,app_code,model } = req.body
     try {
-        setApiKey(apiKey)
-        setApiUrl(apiUrl)
-        setapp_code(app_code)
-        setmodel(model)
+        updateGPTConfig("apiKey", apiKey)
+        updateGPTConfig("apiUrl", apiUrl)
+        updateGPTConfig("app_code", app_code)
+        updateGPTConfig("model",model)
         res.send({status: 200,msg: '设置成功!'})
     } catch (error) {
         res.send({status: 500, msg: '设置失败!'})

@@ -30,9 +30,8 @@ async function loadConfigValues() {
         app_code = await getConfigValue('app_code')
         suffix = await getConfigValue('suffix')
         model = await getConfigValue('model')
-        console.log('api接口设置加载成功');
     } catch (error) {
-        console.error('加载api接口设置失败！', error);
+        console.error('加载api接口设置失败！', error)
     }
 }
 
@@ -65,36 +64,13 @@ async function sendMessageToAPI(message) {
 }
 
 // 更新api设置到数据库
-function updateapiConfigValue(configName, configValue) {
+function updateGPTConfig(configName, configValue) {
     const query = 'REPLACE INTO apiconfig (config, value) VALUES (?, ?)';
     db.run(query, [configName, configValue], (err) => {
         if (err) {
             console.error('更新数据失败:', err);
-        } else {
-            console.log('更新数据成功');
         }
     });
 }
 
-// 设置是否自动回复
-function setApiKey(value) {
-    apiKey = value;
-    updateapiConfigValue('apiKey', value);
-}
-
-function setApiUrl(value) {
-    apiUrl= value;
-    updateapiConfigValue('apiUrl', value);
-}
-
-function setapp_code(value) {
-    app_code = value;
-    updateapiConfigValue('app_code', value);
-}
-
-function setmodel(value) {
-    model = value
-    updateapiConfigValue('model', value);
-}
-
-module.exports = { sendMessageToAPI, setApiKey, setApiUrl, setapp_code , setmodel}
+module.exports = {updateGPTConfig }
