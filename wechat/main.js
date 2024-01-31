@@ -1,5 +1,5 @@
 const { WechatyBuilder } = require("wechaty")
-const { sendMessageToAPI } = require('./getmessage')
+const { sendMessageToAPI } = require('./ChatGPT')
 const sqlite3 = require('sqlite3')
 
 //sqlite数据库路径
@@ -44,7 +44,6 @@ async function loadConfigValues() {
         keyWords = keyWordsString !== null ? keyWordsString.split(",").map(item => item.trim()) : []
         blackName = blackNameString !== null ? blackNameString.split(",").map(item => item.trim()) : []
 
-        console.log('Config values loaded successfully.')
     } catch (error) {
         console.error('Error loading config values:', error)
     }
@@ -76,12 +75,9 @@ let isRunning = false
 async function stopWx() {
     if (isRunning) {
         isRunning = false
-        await wechaty.stop();
-        Status.status = 0;
-        console.log('Wechaty stopped.');
-    } else {
-        console.log('Wechaty is not running.');
-    }
+        await wechaty.stop()
+        Status.status = 0
+    } 
 }
 
 
@@ -92,36 +88,30 @@ let User = {name: null}
 async function wxlogin() {
     if (isRunning) {
         isRunning = false
-        await wechaty.stop();
-        Status.status = 0;
-        console.log('Wechaty stopped.');
-    } else {
-        console.log('Wechaty is not running.');
-    }
-
+        await wechaty.stop()
+        Status.status = 0
+    } 
     isRunning = true
     return new Promise((resolve, reject) => {
         let qrcodeUrl
 
         // 解除之前绑定的所有事件处理程序
-        wechaty.removeAllListeners();
+        wechaty.removeAllListeners()
 
         wechaty
             .on('scan', (qrcode, status) => {
                 qrcodeUrl = `https://my.tv.sohu.com/user/a/wvideo/getQRCode.do?text=${encodeURIComponent(qrcode)}`
-                console.log('Scan QR Code to log in:', status)
                 Status.status = status
                 // 将 qrcodeUrl 提前返回
                 resolve(qrcodeUrl)
             })
 
             .on('login', async (user) => {
-                console.log(`User ${user} logged in`);
                 Status.status = 200
                 // 获取登录用户的信息
-                const contact = await wechaty.Contact.find({ id: user.id });
-                const name = await contact.name();
-                const avatarFileBox = await contact.avatar();
+                const contact = await wechaty.Contact.find({ id: user.id })
+                const name = await contact.name()
+                const avatarFileBox = await contact.avatar()
                 User.name = name
                 // 将头像保存到本地
                 const avatarFilePath = `./wechat/avatar/avatar.jpg`
@@ -138,12 +128,10 @@ async function wxlogin() {
 
             .on('message',async (message) => {
                 if (message.self()) {
-                    console.log('自己发送消息：'+message.text())
                     return
                 }   else  {
                     if (message.type() === wechaty.Message.Type.Text) {
                         const content = message.text()
-                        console.log(content)
                         const room = message.room()
                         const talker = message.talker()
                         const talkername = message.talker().payload.name
@@ -193,13 +181,11 @@ async function wxlogin() {
                         } else {
                             if (autoReplySingle) {
                                 if (blackName.includes(talkername)) {
-                                    console.log('发送者在黑名单中')
                                     return
                                 } else {
                                     const apiMessage = await sendMessageToAPI(content)
                                     const senmsg = prefix + apiMessage + suffix
                                     talker.say(senmsg)
-                                    //向数据库写入消息
                                     writeToDatabase({
                                         time: getCurrentTime(),
                                         type: '私聊',
@@ -213,7 +199,6 @@ async function wxlogin() {
                             }
                         }
                     } else {
-                        console.log('不受支持的消息类型')
                         return
                     } 
                 }
@@ -236,8 +221,6 @@ function writeToDatabase(data) {
     db.run(insertQuery, [time, type, recmsg, senmsg, name, roomname], (error) => {
         if (error) {
             console.error('数据库写入失败:', error)
-        } else {
-            console.log('数据库写入成功')
         }
     })
 }
@@ -248,54 +231,18 @@ function updateConfigValue(configName, configValue) {
     db.run(query, [configName, configValue], (err) => {
         if (err) {
             console.error('数据库写入失败:', err)
-        } else {
-            console.log('数据库写入成功')
         }
     })
 }
 
-// 设置是否自动回复
-function setAutoReplySingle(value) {
-    updateConfigValue('autoReplySingle', value)
+function setWx(key,value) {
+    updateConfigValue(key,value)
 }
-
-function setatReply(value) {
-    updateConfigValue('atReply', value)
-}
-
-function setblackName(value) {
-    updateConfigValue('blackName', value)
-}
-
-function setkeyWords(value) {
-    updateConfigValue('keyWords', value)
-}
-
-function setwhiteRoom(value) {
-    updateConfigValue('whiteRoom', value)
-}
-
-// 修改前缀
-function setSuffix(value) {
-    updateConfigValue('suffix', value)
-}
-
-// 修改后缀
-function setPrefix(value) {
-    updateConfigValue('prefix', value)
-}
-
 
 module.exports = {
     wxlogin,
     Status,
-    setAutoReplySingle,
-    setwhiteRoom,
-    setatReply,
-    setkeyWords,
-    setblackName,
-    setSuffix,
-    setPrefix,
+    setWx,
     stopWx,
     loadConfigValues,
     User

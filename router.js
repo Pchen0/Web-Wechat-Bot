@@ -1,5 +1,5 @@
 const express = require('express')
-const { sendMessageToAPI, setApiKey, setApiUrl, setapp_code ,setmodel} = require('./wechat/getmessage')
+const { sendMessageToAPI, setApiKey, setApiUrl, setapp_code ,setmodel} = require('./wechat/ChatGPT')
 const sqlite3 = require('sqlite3')
 const jsonwebtoken = require('jsonwebtoken')
 const path = require('path')
@@ -8,13 +8,7 @@ const {
     wxlogin,
     Status,
     User,
-    setAutoReplySingle,
-    setwhiteRoom,
-    setatReply,
-    setkeyWords,
-    setblackName,
-    setSuffix,
-    setPrefix,
+    setWx,
     stopWx,
     loadConfigValues
 } = require('./wechat/main')
@@ -26,14 +20,10 @@ var db = new sqlite3.Database(sqliteDbPath)
 
 const router = express.Router()
 
-//托管静态资源文件目录
-router.use(express.static('./public'))
-
-
 // 定义中间件.unless指定哪些接口不需要进行token身份认证
 const { expressjwt: jwt } = require("express-jwt")
 const checkTokenMiddleware = jwt({ secret: secretKey, algorithms: ["HS256"] }).unless({
-    path: [/^\/userlogin/, /^\/register/,/^\/getavatar/],
+    path: [/^\/userlogin/, /^\/register/],
 })
 
 // 验证token
@@ -210,16 +200,16 @@ router.post('/getwxconfig', async (req, res) => {
 })
 
 //设置微信机器人
-router.post('/wxconfig',async(req,res) => {
-    const { autoReplySingle, autoReplyRoom, suffix, prefix, otherTypeReply ,atReply,keyWords,blackName,whiteRoom} = req.body
+router.post('/wxconfig', async (req, res) => {
+    const { autoReplySingle, suffix, prefix, atReply, keyWords, blackName, whiteRoom } = req.body
     try {
-        setAutoReplySingle(autoReplySingle)
-        setSuffix(suffix)
-        setPrefix(prefix)
-        setwhiteRoom(whiteRoom)
-        setatReply(atReply)
-        setkeyWords(keyWords)
-        setblackName(blackName)
+        setWx('autoReplySingle', autoReplySingle)
+        setWx('suffix', suffix)
+        setWx('prefix', prefix)
+        setWx('whiteRoom', whiteRoom)
+        setWx('atReply', atReply)
+        setWx('keyWords', keyWords)
+        setWx('blackName', blackName)
         loadConfigValues()
         res.send({ status: 200, msg: '设置成功！' })
     } catch (error) {

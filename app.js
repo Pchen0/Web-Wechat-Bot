@@ -9,7 +9,7 @@ const app = express()
 const cors = require('cors')
 app.use(cors())
 
-router.use(express.static('./public'));
+router.use(express.static('./public'))
 
 app.use(express.json())
 
