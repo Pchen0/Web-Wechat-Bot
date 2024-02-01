@@ -31,7 +31,7 @@ async function loadConfigValues() {
         autoReplySingle = await getConfigValue('autoReplySingle') === 'true'
         prefix = await getConfigValue('prefix')
         suffix = await getConfigValue('suffix')
-        model = await getConfigValue('model')
+        usemodel = await getConfigValue('usemodel')
         whiteRoomString = await getConfigValue('whiteRoom')
         keyWordsString = await getConfigValue('keyWords')
         blackNameString = await getConfigValue('blackName')
@@ -56,16 +56,13 @@ loadConfigValues()
 
 //选择模型
 async function sendMessageToAPI(message) {
-    if (model==='xunfei'){
+    if (usemodel==='xunfei'){
         const content = await getXunfeiMessage(message)
         return content
-    }   else if (model==='chatgpt') {
+    }   else  {
         const content = await getGPTMessage(message)
         return content
-    }   else {
-        const content = '请在设置页面中选择语言模型'
-        return content
-    }
+    }  
 }
 
 //获取时间

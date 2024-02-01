@@ -200,14 +200,14 @@ router.post('/gptconfig',async(req,res) => {
 })
 
 router.post('/xfconfig', async (req, res) => {
-    const { temperature, max_tokens, app_id, APIKey, APISecret, apiUrl, domain } = req.body
+    const { temperature, max_tokens, app_id, APIKey, APISecret, APIUrl, domain } = req.body
     try {
         updateXunfeiConfig("temperature", temperature)
         updateXunfeiConfig("max_tokens", max_tokens)
         updateXunfeiConfig("app_id", app_id)
         updateXunfeiConfig("APIKey", APIKey)
         updateXunfeiConfig("APISecret", APISecret)
-        updateXunfeiConfig("apiUrl", apiUrl)
+        updateXunfeiConfig("APIUrl", APIUrl)
         updateXunfeiConfig("domain", domain)
         res.send({ status: 200, msg: '设置成功!' })
     } catch (error) {
@@ -228,7 +228,7 @@ router.post('/getwxconfig', async (req, res) => {
 
 //设置微信机器人
 router.post('/wxconfig', async (req, res) => {
-    const { autoReplySingle, suffix, prefix, atReply, keyWords, blackName, whiteRoom ,model} = req.body
+    const { autoReplySingle, suffix, prefix, atReply, keyWords, blackName, whiteRoom ,usemodel} = req.body
     try {
         setWx('autoReplySingle', autoReplySingle)
         setWx('suffix', suffix)
@@ -237,7 +237,7 @@ router.post('/wxconfig', async (req, res) => {
         setWx('atReply', atReply)
         setWx('keyWords', keyWords)
         setWx('blackName', blackName)
-        setWx('model', model)
+        setWx('usemodel', usemodel)
         loadConfigValues()
         res.send({ status: 200, msg: '设置成功！' })
     } catch (error) {

@@ -25,7 +25,7 @@ function getConfigValue(configName) {
 // 读取配置信息并设置相应的变量
 async function loadConfigValues() {
     try {
-        url = await getConfigValue('apiUrl')
+        url = await getConfigValue('APIUrl')
         APIKey = await getConfigValue('APIKey')
         APISecret = await getConfigValue('APISecret')
         app_id = await getConfigValue('app_id')
