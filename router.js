@@ -1,5 +1,6 @@
 const express = require('express')
-const { updateGPTConfig } = require('./wechat/ChatGPT')
+const { updateGPTConfig } = require('./API/ChatGPT')
+const { updateXunfeiConfig } = require('./API/xunfei')
 const sqlite3 = require('sqlite3')
 const jsonwebtoken = require('jsonwebtoken')
 const path = require('path')
@@ -165,9 +166,8 @@ router.get('/stop', async (req, res) => {
     }
 })
 
-//获取api设置
-router.post('/getapiconfig', async (req, res) => {
-    db.all('SELECT * FROM apiconfig', [], (err, rows) => {
+router.post('/getgptconfig', async (req, res) => {
+    db.all('SELECT * FROM gptconfig', [], (err, rows) => {
         if (err) {
             res.send({ status: 500, msg: '查询失败！' })
             return
@@ -176,8 +176,17 @@ router.post('/getapiconfig', async (req, res) => {
     })
 })
 
-//设置api接口相关配置
-router.post('/apiconfig',async(req,res) => {
+router.post('/getxfconfig', async (req, res) => {
+    db.all('SELECT * FROM xfconfig', [], (err, rows) => {
+        if (err) {
+            res.send({ status: 500, msg: '查询失败！' })
+            return
+        }
+        res.send({ status: 200, msg: rows })
+    })
+})
+
+router.post('/gptconfig',async(req,res) => {
     const { apiKey,apiUrl,app_code,model } = req.body
     try {
         updateGPTConfig("apiKey", apiKey)
@@ -187,6 +196,22 @@ router.post('/apiconfig',async(req,res) => {
         res.send({status: 200,msg: '设置成功!'})
     } catch (error) {
         res.send({status: 500, msg: '设置失败!'})
+    }
+})
+
+router.post('/xfconfig', async (req, res) => {
+    const { temperature, max_tokens, app_id, APIKey, APISecret, apiUrl, domain } = req.body
+    try {
+        updateXunfeiConfig("temperature", temperature)
+        updateXunfeiConfig("max_tokens", max_tokens)
+        updateXunfeiConfig("app_id", app_id)
+        updateXunfeiConfig("APIKey", APIKey)
+        updateXunfeiConfig("APISecret", APISecret)
+        updateXunfeiConfig("apiUrl", apiUrl)
+        updateXunfeiConfig("domain", domain)
+        res.send({ status: 200, msg: '设置成功!' })
+    } catch (error) {
+        res.send({ status: 500, msg: '设置失败!' })
     }
 })
 
@@ -203,7 +228,7 @@ router.post('/getwxconfig', async (req, res) => {
 
 //设置微信机器人
 router.post('/wxconfig', async (req, res) => {
-    const { autoReplySingle, suffix, prefix, atReply, keyWords, blackName, whiteRoom } = req.body
+    const { autoReplySingle, suffix, prefix, atReply, keyWords, blackName, whiteRoom ,model} = req.body
     try {
         setWx('autoReplySingle', autoReplySingle)
         setWx('suffix', suffix)
@@ -212,6 +237,7 @@ router.post('/wxconfig', async (req, res) => {
         setWx('atReply', atReply)
         setWx('keyWords', keyWords)
         setWx('blackName', blackName)
+        setWx('model', model)
         loadConfigValues()
         res.send({ status: 200, msg: '设置成功！' })
     } catch (error) {

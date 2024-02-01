@@ -1,5 +1,4 @@
 const axios = require('axios')
-const config = require('../config') 
 const sqlite3 = require('sqlite3')
 
 //sqlite数据库路径
@@ -9,7 +8,7 @@ var db = new sqlite3.Database(sqliteDbPath)
 
 function getConfigValue(configName) {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT value FROM apiconfig WHERE config = ?';
+        const query = 'SELECT value FROM gptconfig WHERE config = ?';
         db.get(query, [configName], (err, row) => {
             if (err) {
                 reject(err);
@@ -28,7 +27,6 @@ async function loadConfigValues() {
         apiKey = await getConfigValue('apiKey')
         apiUrl = await getConfigValue('apiUrl')
         app_code = await getConfigValue('app_code')
-        suffix = await getConfigValue('suffix')
         model = await getConfigValue('model')
     } catch (error) {
         console.error('加载api接口设置失败！', error)
@@ -39,7 +37,7 @@ async function loadConfigValues() {
 loadConfigValues()
 
 
-async function sendMessageToAPI(message) {
+async function getGPTMessage(message) {
     const requestData = {
         app_code: app_code,
         messages: [{ "role": "user", "content": message }],
@@ -65,7 +63,7 @@ async function sendMessageToAPI(message) {
 
 // 更新api设置到数据库
 function updateGPTConfig(configName, configValue) {
-    const query = 'REPLACE INTO apiconfig (config, value) VALUES (?, ?)';
+    const query = 'REPLACE INTO gptconfig (config, value) VALUES (?, ?)';
     db.run(query, [configName, configValue], (err) => {
         if (err) {
             console.error('更新数据失败:', err);
@@ -74,4 +72,4 @@ function updateGPTConfig(configName, configValue) {
     })
 }
 
-module.exports = { updateGPTConfig, sendMessageToAPI }
+module.exports = { updateGPTConfig, getGPTMessage }

@@ -1,6 +1,6 @@
 <h1 align="center">Web Wechat Bot</h1>
 
-「Web Wechat Bot」是一个基于Wechaty、可通过网页远程登录管理、可接入ChatGPT的微信聊天机器人，使用微信网页版协议。
+「Web Wechat Bot」是一个基于Wechaty、可通过网页远程登录管理、可接入讯飞星火、ChatGPT等大语言模型的微信聊天机器人，使用微信网页版协议。
 
 
 
@@ -28,21 +28,23 @@
 
 ```
 WebWechatBot                            
+├─ API                                  
+│  ├─ ChatGPT.js                        
+│  └─ xunfei.js                         
 ├─ db                                   
-│  └─ data.db
-├─ public                               
-│  ├─ css                               
+│  └─ data.db                                                  ├─ public                               
+│  ├─ css                                
 │  ├─ js                                
 │  └─ index.html                        
 ├─ wechat                               
-│  ├─ avatar                           
-│  ├─ getmessage.js                     
+│  ├─ avatar                                               
 │  └─ main.js                           
 ├─ app.js                               
 ├─ config.js                            
 ├─ package.json                         
 ├─ README.md                            
-└─ router.js			
+└─ router.js                            
+		
 ```
 
 
@@ -95,11 +97,11 @@ module.exports = {
 
 通过你的ip地址+端口号进入到机器人的管理界面，默认用户名为`admin`，密码`123456`
 
-在API设置页面中填入你的接口地址、API Key、模型名称等，其中app_code专为一些兼容openai接口的平台设置，可不填。
+在API设置页面中填入你的接口地址、API Key、模型名称等，你可以自由选择讯飞星火和ChatGPT两个模型，其中兼容openai接口的API可填入ChatGPT的配置中。
 
 ![](./images/1.png)
 
-在Wechat Bot设置界面你可以设置机器人的一些回复规则。
+在Wechat Bot设置界面你可以选择使用的语言模型、设置机器人的一些回复规则。
 
 ![](./images/2.png)
 

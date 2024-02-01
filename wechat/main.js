@@ -1,5 +1,6 @@
 const { WechatyBuilder } = require("wechaty")
-const { sendMessageToAPI } = require('./ChatGPT')
+const { getGPTMessage } = require('../API/ChatGPT')
+const { getXunfeiMessage } = require('../API/xunfei')
 const sqlite3 = require('sqlite3')
 
 //sqlite数据库路径
@@ -30,6 +31,7 @@ async function loadConfigValues() {
         autoReplySingle = await getConfigValue('autoReplySingle') === 'true'
         prefix = await getConfigValue('prefix')
         suffix = await getConfigValue('suffix')
+        model = await getConfigValue('model')
         whiteRoomString = await getConfigValue('whiteRoom')
         keyWordsString = await getConfigValue('keyWords')
         blackNameString = await getConfigValue('blackName')
@@ -49,10 +51,22 @@ async function loadConfigValues() {
     }
 }
 
-
-
 // 调用函数加载配置信息
 loadConfigValues()
+
+//选择模型
+async function sendMessageToAPI(message) {
+    if (model==='xunfei'){
+        const content = await getXunfeiMessage(message)
+        return content
+    }   else if (model==='chatgpt') {
+        const content = await getGPTMessage(message)
+        return content
+    }   else {
+        const content = '请在设置页面中选择语言模型'
+        return content
+    }
+}
 
 //获取时间
 function getCurrentTime() {
