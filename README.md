@@ -97,7 +97,7 @@ module.exports = {
 
 通过你的ip地址+端口号进入到机器人的管理界面，默认用户名为`admin`，密码`123456`
 
-在API设置页面中填入你的接口地址、API Key、模型名称等，你可以自由选择讯飞星火和ChatGPT两个模型，其中兼容openai接口的API可填入ChatGPT的配置中。
+在API设置页面中填入你的接口地址、API Key、模型名称等，你可以自由选择讯飞星火和ChatGPT两个模型，其中兼容openai接口的API可填入ChatGPT的配置中。设置完成后可在对话测试中测试API接口是否能正常使用。
 
 ![](./images/1.png)
 

@@ -1,6 +1,7 @@
 const express = require('express')
 const { updateGPTConfig } = require('./API/ChatGPT')
 const { updateXunfeiConfig } = require('./API/xunfei')
+const { sendMessageToAPI } = require('./wechat/main')
 const sqlite3 = require('sqlite3')
 const jsonwebtoken = require('jsonwebtoken')
 const path = require('path')
@@ -154,6 +155,16 @@ router.get('/getwxname', async (req, res) => {
 //获取二维码状态
 router.get('/getstatus',async(req,res) => {
     res.send({status:Status.status})
+})
+
+router.post('/chat',async(req,res) => {
+    try{
+        console.log('收到：',req.body)
+        const response = await sendMessageToAPI(req.body.msg)
+        res.send({status:200,msg:response}) 
+    } catch(err) {
+        res.send({status:500,msg:'获取消息失败！'+ err.message})
+    }
 })
 
 // 停止机器人

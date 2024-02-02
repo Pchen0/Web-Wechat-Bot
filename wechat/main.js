@@ -57,10 +57,12 @@ loadConfigValues()
 //选择模型
 async function sendMessageToAPI(message) {
     if (usemodel==='xunfei'){
-        const content = await getXunfeiMessage(message)
+        const response = await getXunfeiMessage(message)
+        const content = prefix + response + suffix
         return content
     }   else  {
-        const content = await getGPTMessage(message)
+        const response = await getGPTMessage(message)
+        const content = prefix + response + suffix
         return content
     }  
 }
@@ -127,8 +129,6 @@ async function wxlogin() {
                 // 将头像保存到本地
                 const avatarFilePath = `./wechat/avatar/avatar.jpg`
                 await avatarFileBox.toFile(avatarFilePath,true)
-                // 有程序运行后配置未加载的问题，这里重新加载一遍
-                loadConfigValues()
             })
 
             .on('logout', async () => {
@@ -153,10 +153,9 @@ async function wxlogin() {
                             if (whiteRoom.length === 0 || whiteRoom.includes(roomname)) {
                                 //在群聊中被@
                                 if (await message.mentionSelf()) {
-                                    console.log('机器人被@')
                                     if (atReply) {
                                         const apiMessage = await sendMessageToAPI(content)
-                                        const senmsg = '@' + talkername + '  ' + prefix + apiMessage + suffix
+                                        const senmsg = '@' + talkername + '  ' + apiMessage 
                                         room.say(senmsg)
                                         //写入数据库
                                         writeToDatabase({
@@ -172,7 +171,7 @@ async function wxlogin() {
                                 } else if (foundWords.length > 0) {
                                     console.log('发现关键字')
                                     const apiMessage = await sendMessageToAPI(content)
-                                    const senmsg = '@' + talkername + '  ' + prefix + apiMessage + suffix
+                                    const senmsg = '@' + talkername + '  ' + apiMessage 
                                     room.say(senmsg)
                                     //写入数据库
                                     writeToDatabase({
@@ -195,13 +194,12 @@ async function wxlogin() {
                                     return
                                 } else {
                                     const apiMessage = await sendMessageToAPI(content)
-                                    const senmsg = prefix + apiMessage + suffix
-                                    talker.say(senmsg)
+                                    talker.say(apiMessage)
                                     writeToDatabase({
                                         time: getCurrentTime(),
                                         type: '私聊',
                                         recmsg: content,
-                                        senmsg: senmsg,
+                                        senmsg: apiMessage,
                                         name: message.talker().payload.name,
                                         roomname: null,
                                     })
@@ -256,5 +254,6 @@ module.exports = {
     setWx,
     stopWx,
     loadConfigValues,
-    User
+    User,
+    sendMessageToAPI
 }
