@@ -99,11 +99,11 @@ GET ${path} HTTP/1.1`
             }))
         })
 
-        console.log(domain,temperature)
         let apiMessage = ''
 
         sock.on("error", function (err) {
-            reject(err)
+            let errMessage = '获取消息失败!'+err.message
+                reject(errMessage)
         })
 
         sock.on("close", function () {

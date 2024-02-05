@@ -53,8 +53,9 @@ router.use(checkToken)
 
 //用户登录
 router.post('/userlogin', (req, res) => {
-    var username = req.body.username
-    var password = req.body.password
+    const username = req.body.username
+    const password = req.body.password
+    const remember = req.body.remember
 
     // 匹配密码
     db.all('select * from user where username=?', username, function (err, row) {
@@ -67,8 +68,13 @@ router.post('/userlogin', (req, res) => {
                     res.send({ status: 500, msg: "密码错误" })
                 } else {
                     // 如果用户名存在且密码匹配，则登录成功。
-                    const tokenStr = jsonwebtoken.sign({ username: username }, secretKey, { expiresIn: '24h' })
-                    res.send({ status: 200, msg: "登录成功", token: "Bearer " + tokenStr })
+                    if(remember) {
+                        const tokenStr = jsonwebtoken.sign({ username: username }, secretKey)
+                        res.send({ status: 200, msg: "登录成功", token: "Bearer " + tokenStr })
+                    } else{
+                        const tokenStr = jsonwebtoken.sign({ username: username }, secretKey, { expiresIn: '24h' })
+                        res.send({ status: 200, msg: "登录成功", token: "Bearer " + tokenStr })
+                    }
                 }
             }
         }

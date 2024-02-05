@@ -56,15 +56,17 @@ loadConfigValues()
 
 //选择模型
 async function sendMessageToAPI(message) {
-    if (usemodel==='xunfei'){
+    if (usemodel === 'xunfei'){
         const response = await getXunfeiMessage(message)
         const content = prefix + response + suffix
         return content
-    }   else  {
+    }   else if(usemodel === 'chatgpt') {
         const response = await getGPTMessage(message)
         const content = prefix + response + suffix
         return content
-    }  
+    }  else {
+        return
+    }
 }
 
 //获取时间
@@ -93,10 +95,8 @@ async function stopWx() {
     } 
 }
 
-
 let Status = { status: null }
 let User = {name: null}
-
 
 async function wxlogin() {
     if (isRunning) {
@@ -123,12 +123,11 @@ async function wxlogin() {
                 Status.status = 200
                 // 获取登录用户的信息
                 const contact = await wechaty.Contact.find({ id: user.id })
-                const name = await contact.name()
+                const name = contact.name()
                 const avatarFileBox = await contact.avatar()
                 User.name = name
                 // 将头像保存到本地
-                const avatarFilePath = `./wechat/avatar/avatar.jpg`
-                await avatarFileBox.toFile(avatarFilePath,true)
+                    await avatarFileBox.toFile(`./wechat/avatar/avatar.jpg`,true)
             })
 
             .on('logout', async () => {
