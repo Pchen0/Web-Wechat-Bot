@@ -1,6 +1,7 @@
 const express = require('express')
 const { updateGPTConfig } = require('./API/ChatGPT')
 const { updateXunfeiConfig } = require('./API/xunfei')
+const { updateTYConfig } = require('./API/tongyi')
 const { sendMessageToAPI } = require('./wechat/main')
 const sqlite3 = require('sqlite3')
 const jsonwebtoken = require('jsonwebtoken')
@@ -126,7 +127,6 @@ router.post('/changeaccount', findusername, (req, res) => {
                                 res.send({ status: 500, msg: "更新账户信息失败" })
                             } else {
                                 res.send({ status: 200, msg: "账户信息更新成功" })
-
                             }
                         })
                     }
@@ -165,7 +165,6 @@ router.get('/getstatus',async(req,res) => {
 
 router.post('/chat',async(req,res) => {
     try{
-        console.log('收到：',req.body)
         const response = await sendMessageToAPI(req.body.msg)
         res.send({status:200,msg:response}) 
     } catch(err) {
@@ -203,6 +202,16 @@ router.post('/getxfconfig', async (req, res) => {
     })
 })
 
+router.post('/gettyconfig', async (req, res) => {
+    db.all('SELECT * FROM tongyiconfig', [], (err, rows) => {
+        if (err) {
+            res.send({ status: 500, msg: '查询失败！' })
+            return
+        }
+        res.send({ status: 200, msg: rows })
+    })
+})
+
 router.post('/gptconfig',async(req,res) => {
     const { apiKey,apiUrl,app_code,model } = req.body
     try {
@@ -226,6 +235,21 @@ router.post('/xfconfig', async (req, res) => {
         updateXunfeiConfig("APISecret", APISecret)
         updateXunfeiConfig("APIUrl", APIUrl)
         updateXunfeiConfig("domain", domain)
+        res.send({ status: 200, msg: '设置成功!' })
+    } catch (error) {
+        res.send({ status: 500, msg: '设置失败!' })
+    }
+})
+
+router.post('/tyconfig', async (req, res) => {
+    const { temperature, max_tokens, model, apiKey, presets, apiUrl } = req.body
+    try {
+        updateTYConfig("temperature", temperature)
+        updateTYConfig("max_tokens", max_tokens)
+        updateTYConfig("presets", presets)
+        updateTYConfig("apiKey", apiKey)
+        updateTYConfig("model", model)
+        updateTYConfig("apiUrl", apiUrl)
         res.send({ status: 200, msg: '设置成功!' })
     } catch (error) {
         res.send({ status: 500, msg: '设置失败!' })

@@ -1,6 +1,6 @@
 <h1 align="center">Web Wechat Bot</h1>
 
-「Web Wechat Bot」是一个基于Wechaty、可通过网页远程登录管理、可接入讯飞星火、ChatGPT等大语言模型的微信聊天机器人，使用微信网页版协议。你可以通过网页登录微信、设置回复规则、配置API接口等。
+「Web Wechat Bot」是一个基于Wechaty、可通过网页远程登录管理、可接入讯飞星火、ChatGPT、通义千问等大语言模型的微信聊天机器人，使用微信网页版协议。你可以通过网页登录微信、设置回复规则、配置API接口等。
 
 
 

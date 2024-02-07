@@ -1,7 +1,9 @@
 const { WechatyBuilder } = require("wechaty")
 const { getGPTMessage } = require('../API/ChatGPT')
 const { getXunfeiMessage } = require('../API/xunfei')
+const { getTYMessage } = require('../API/tongyi')
 const sqlite3 = require('sqlite3')
+const { response } = require("express")
 
 //sqlite数据库路径
 let sqliteDbPath = "./db/data.db"
@@ -64,8 +66,13 @@ async function sendMessageToAPI(message) {
         const response = await getGPTMessage(message)
         const content = prefix + response + suffix
         return content
-    }  else {
-        return
+    }  else if(usemodel === 'tongyi'){
+        const response = await getTYMessage(message)
+        const content = prefix + response + suffix
+        return content
+    } else {
+        const content = prefix + '请前往设置页面选择Bot使用的模型' + suffix
+        return content
     }
 }
 
@@ -168,7 +175,6 @@ async function wxlogin() {
                                         return
                                     }
                                 } else if (foundWords.length > 0) {
-                                    console.log('发现关键字')
                                     const apiMessage = await sendMessageToAPI(content)
                                     const senmsg = '@' + talkername + '  ' + apiMessage 
                                     room.say(senmsg)
