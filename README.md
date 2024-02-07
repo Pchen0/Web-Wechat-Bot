@@ -30,21 +30,23 @@
 WebWechatBot                            
 ├─ API                                  
 │  ├─ ChatGPT.js                        
+│  ├─ tongyi.js                         
 │  └─ xunfei.js                         
 ├─ db                                   
-│  └─ data.db                                                  ├─ public                               
-│  ├─ css                                
-│  ├─ js                                
+│  └─ data.db                           
+├─ public                               
+│  ├─ css                                 
+│  ├─ js                                              
 │  └─ index.html                        
 ├─ wechat                               
-│  ├─ avatar                                               
+│  ├─ avatar                                              
 │  └─ main.js                           
 ├─ app.js                               
 ├─ config.js                            
+├─ LICENSE                              
 ├─ package.json                         
 ├─ README.md                            
 └─ router.js                            
-		
 ```
 
 

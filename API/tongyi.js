@@ -21,14 +21,14 @@ function getConfigValue(configName) {
 // 读取配置信息并设置相应的变量
 async function loadConfigValues() {
     try {
-        apiKey = await getConfigValue('apiKey')
-        apiUrl = await getConfigValue('apiUrl')
-        maxTokensStr = await getConfigValue('max_tokens')
-        temperatureStr = await getConfigValue('temperature')
-        model = await getConfigValue('model')
-        presets = await getConfigValue('presets')
-        temperature = parseFloat(temperatureStr)
-        max_tokens = parseInt(maxTokensStr)
+        ty_apiKey = await getConfigValue('apiKey')
+        ty_apiUrl = await getConfigValue('apiUrl')
+        ty_maxTokensStr = await getConfigValue('max_tokens')
+        ty_temperatureStr = await getConfigValue('temperature')
+        ty_model = await getConfigValue('model')
+        ty_presets = await getConfigValue('presets')
+        ty_temperature = parseFloat(ty_temperatureStr)
+        ty_max_tokens = parseInt(ty_maxTokensStr)
     } catch (error) {
         console.error('加载通义api接口设置失败！', error)
     }
@@ -39,23 +39,23 @@ loadConfigValues()
 
 async function getTYMessage(message) {
     const requestData = {
-        model: model,
+        model: ty_model,
         input: {
             messages: [
-                { "role": "system", "content": presets },
+                { "role": "system", "content": ty_presets },
                 { "role": "user", "content": message }
             ],
         },
         parameters: {
-            max_tokens: max_tokens,
-            temperature: temperature
+            max_tokens: ty_max_tokens,
+            temperature: ty_temperature
         }
     }
 
-    const token = "Bearer " + apiKey
+    const token = "Bearer " + ty_apiKey
 
     try {
-        const responseData = await axios.post(apiUrl, requestData, {
+        const responseData = await axios.post(ty_apiUrl, requestData, {
             headers: { 'Content-Type': 'application/json', Authorization: token }
         })
 

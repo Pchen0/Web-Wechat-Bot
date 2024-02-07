@@ -25,15 +25,15 @@ function getConfigValue(configName) {
 // 读取配置信息并设置相应的变量
 async function loadConfigValues() {
     try {
-        url = await getConfigValue('APIUrl')
-        APIKey = await getConfigValue('APIKey')
-        APISecret = await getConfigValue('APISecret')
-        app_id = await getConfigValue('app_id')
-        temperatureStr = await getConfigValue('temperature')
-        maxTokensStr = await getConfigValue('max_tokens')
-        domain = await getConfigValue('domain')
-        temperature = parseFloat(temperatureStr)
-        max_tokens = parseInt(maxTokensStr)
+        xf_url = await getConfigValue('APIUrl')
+        xf_APIKey = await getConfigValue('APIKey')
+        xf_APISecret = await getConfigValue('APISecret')
+        xf_app_id = await getConfigValue('app_id')
+        xf_temperatureStr = await getConfigValue('temperature')
+        xf_maxTokensStr = await getConfigValue('max_tokens')
+        xf_domain = await getConfigValue('domain')
+        xf_temperature = parseFloat(xf_temperatureStr)
+        xf_max_tokens = parseInt(xf_maxTokensStr)
     } catch (error) {
         console.error('加载讯飞接口设置失败！', error)
     }
@@ -51,7 +51,7 @@ async function loadConfigValues() {
 async function getXunfeiMessage(message) {
 
     const dateString = new Date().toGMTString()
-    const parsedUrl = new URL(url)
+    const parsedUrl = new URL(xf_url)
 
     const host = parsedUrl.hostname
     const path = parsedUrl.pathname
@@ -60,12 +60,12 @@ async function getXunfeiMessage(message) {
 date: ${dateString}
 GET ${path} HTTP/1.1`
 
-    let signature = crypto.createHmac('sha256', APISecret)
+    let signature = crypto.createHmac('sha256', xf_APISecret)
         .update(tmp)
         .digest('base64')
 
     const authorization_origin =
-        `api_key="${APIKey}", algorithm="hmac-sha256", headers="host date request-line", signature="${signature}"`
+        `api_key="${xf_APIKey}", algorithm="hmac-sha256", headers="host date request-line", signature="${signature}"`
 
     let buff = Buffer.from(authorization_origin)
     const authorization = buff.toString('base64')
@@ -79,13 +79,13 @@ GET ${path} HTTP/1.1`
         sock.on("open", function () {
             sock.send(JSON.stringify({
                 "header": {
-                    "app_id": app_id,
+                    "app_id": xf_app_id,
                 },
                 "parameter": {
                     "chat": {
-                        "domain": domain,
-                        "temperature": temperature,
-                        "max_tokens": max_tokens,
+                        "domain": xf_domain,
+                        "temperature": xf_temperature,
+                        "max_tokens": xf_max_tokens,
                     }
                 },
                 "payload": {
