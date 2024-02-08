@@ -4,10 +4,6 @@ const config = require('./config.js')
 
 const app = express()
 
-// 导入并配置cors中间件， 解决跨域
-const cors = require('cors')
-app.use(cors())
-
 app.use(express.json())
 
 app.use(router)

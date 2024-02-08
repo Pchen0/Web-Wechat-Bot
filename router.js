@@ -5,6 +5,7 @@ const { updateTYConfig } = require('./API/tongyi')
 const { sendMessageToAPI } = require('./wechat/main')
 const sqlite3 = require('sqlite3')
 const jsonwebtoken = require('jsonwebtoken')
+const bcryptjs = require('bcryptjs')
 const path = require('path')
 const secretKey = 'co666'
 const {
@@ -63,7 +64,8 @@ router.post('/userlogin', (req, res) => {
             if (row == "") {
                 res.send({ status: 500, msg: "此用户不存在" })
             } else {
-                if (row[0].password != password) {
+                const compareResult = bcryptjs.compareSync(password, row[0].password)
+                if (!compareResult) {
                     res.send({ status: 500, msg: "密码错误" })
                 } else {
                     // 如果用户名存在且密码匹配，则登录成功。
@@ -79,8 +81,6 @@ router.post('/userlogin', (req, res) => {
         }
     })
 })
-
-//更改账户信息
 
 function findusername(req, res, next) {
     // 从请求头中获取 Token
@@ -101,26 +101,31 @@ router.post('/getusername', findusername,(req,res) => {
 })
 
 router.post('/changeaccount', findusername, (req, res) => {
-    const username = req.username
-    const oldpassword = req.body.oldpassword
-    const newusername = req.body.newusername
-    const newpassword = req.body.newpassword
+    const username = req.username;
+    const oldpassword = req.body.oldpassword;
+    const newusername = req.body.newusername;
+    const newpassword = req.body.newpassword;
+
     // 查询用户是否存在以及旧密码是否正确
-    db.get('SELECT * FROM user WHERE username=? AND password=?', [username, oldpassword], (err, row) => {
+    db.get('SELECT * FROM user WHERE username=?', [username], (err, row) => {
         if (err) {
             res.send({ status: 500, msg: "数据库查询失败" })
         } else {
             if (!row) {
                 res.send({ status: 500, msg: "用户名或密码错误" })
             } else {
-                if (newusername.length<5){
-                    res.send({ status: 500, msg: "用户名不能小于5位" })
-                }   else {
-                    if (newpassword.length<6){
+                // 比对旧密码
+                const compareResult = bcryptjs.compareSync(oldpassword, row.password)
+                if (!compareResult) {
+                    res.send({ status: 500, msg: "用户名或密码错误" })
+                } else {
+                    if (newusername.length < 5) {
+                        res.send({ status: 500, msg: "用户名不能小于5位" })
+                    } else if (newpassword.length < 6) {
                         res.send({ status: 500, msg: "密码不能小于6位" })
-                    }   else    {
+                    } else {
                         // 更新用户名和密码
-                        db.run('UPDATE user SET username=?, password=? WHERE username=?', [newusername, newpassword, username], (err) => {
+                        db.run('UPDATE user SET username=?, password=? WHERE username=?', [newusername, bcryptjs.hashSync(newpassword, 10), username], (err) => {
                             if (err) {
                                 res.send({ status: 500, msg: "更新账户信息失败" })
                             } else {
@@ -133,6 +138,7 @@ router.post('/changeaccount', findusername, (req, res) => {
         }
     })
 })
+
 
 //获取二维码 启动bot
 router.get('/getqrcode',async(req,res) => {
