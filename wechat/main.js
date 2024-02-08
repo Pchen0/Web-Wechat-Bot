@@ -3,12 +3,9 @@ const { getGPTMessage } = require('../API/ChatGPT')
 const { getXunfeiMessage } = require('../API/xunfei')
 const { getTYMessage } = require('../API/tongyi')
 const sqlite3 = require('sqlite3')
-const { response } = require("express")
 
-//sqlite数据库路径
-let sqliteDbPath = "./db/data.db"
 //打开数据库
-let db = new sqlite3.Database(sqliteDbPath)
+    let db = new sqlite3.Database("./db/data.db")
 
 const wechaty = WechatyBuilder.build()
 

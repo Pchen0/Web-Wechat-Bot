@@ -42,7 +42,6 @@ async function getTYMessage(message) {
         model: ty_model,
         input: {
             messages: [
-                { "role": "system", "content": ty_presets },
                 { "role": "user", "content": message }
             ],
         },
@@ -52,25 +51,29 @@ async function getTYMessage(message) {
         }
     }
 
+    if (ty_presets) {
+        requestData.input.messages.unshift({ "role": "system", "content": ty_presets })
+    }
+    
     const token = "Bearer " + ty_apiKey
 
     try {
         const responseData = await axios.post(ty_apiUrl, requestData, {
             headers: { 'Content-Type': 'application/json', Authorization: token }
-        })
+        });
 
-        const apiMessage = responseData.data.output.text
+        const apiMessage = responseData.data.output.text;
 
-        return apiMessage
+        return apiMessage;
     } catch (error) {
         console.error("向api接口发送请求时出现错误")
-        return error
+        return error;
     }
 }
 
 // 更新api设置到数据库
 function updateTYConfig(configName, configValue) {
-    const query = 'REPLACE INTO tongyiconfig (config, value) VALUES (?, ?)';
+    const query = 'REPLACE INTO tongyiconfig (config, value) VALUES (?, ?)'
     db.run(query, [configName, configValue], (err) => {
         if (err) {
             console.error('更新数据失败:', err);

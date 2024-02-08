@@ -22,30 +22,34 @@ function getConfigValue(configName) {
 // 读取配置信息并设置相应的变量
 async function loadConfigValues() {
     try {
-        apiKey = await getConfigValue('apiKey')
-        apiUrl = await getConfigValue('apiUrl')
-        app_code = await getConfigValue('app_code')
-        model = await getConfigValue('model')
+        gpt_apiKey = await getConfigValue('apiKey')
+        gpt_apiUrl = await getConfigValue('apiUrl')
+        gpt_app_code = await getConfigValue('app_code')
+        gpt_model = await getConfigValue('model')
+        gpt_presets = await getConfigValue('presets')
     } catch (error) {
-        console.error('加载api接口设置失败！', error)
+        console.error('加载GPT接口设置失败！', error)
     }
 }
 
 // 调用函数加载配置信息
 loadConfigValues()
 
-
 async function getGPTMessage(message) {
     const requestData = {
-        app_code: app_code,
+        app_code: gpt_app_code,
         messages: [{ "role": "user", "content": message }],
-        model: model
+        model: gpt_model
     }
 
-    const token = "Bearer " + apiKey
+    if(gpt_presets) {
+        requestData.messages.unshift({ "role": "system", "content": gpt_presets })
+    }
+
+    const token = "Bearer " + gpt_apiKey
 
     try {
-        const responseData = await axios.post(apiUrl, requestData, {
+        const responseData = await axios.post(gpt_apiUrl, requestData, {
             headers: { 'Content-Type': 'application/json', Authorization: token }
         })
 

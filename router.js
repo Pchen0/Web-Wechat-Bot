@@ -16,10 +16,8 @@ const {
     loadConfigValues
 } = require('./wechat/main')
 
-//sqlite数据库路径
-let sqliteDbPath = "./db/data.db"
 //打开数据库
-var db = new sqlite3.Database(sqliteDbPath)
+var db = new sqlite3.Database("./db/data.db")
 
 const router = express.Router()
 
@@ -213,12 +211,13 @@ router.post('/gettyconfig', async (req, res) => {
 })
 
 router.post('/gptconfig',async(req,res) => {
-    const { apiKey,apiUrl,app_code,model } = req.body
+    const { apiKey,apiUrl,app_code,model,presets } = req.body
     try {
         updateGPTConfig("apiKey", apiKey)
         updateGPTConfig("apiUrl", apiUrl)
         updateGPTConfig("app_code", app_code)
         updateGPTConfig("model",model)
+        updateGPTConfig("presets",presets)
         res.send({status: 200,msg: '设置成功!'})
     } catch (error) {
         res.send({status: 500, msg: '设置失败!'})
