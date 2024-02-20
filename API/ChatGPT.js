@@ -27,6 +27,10 @@ async function loadConfigValues() {
         gpt_app_code = await getConfigValue('app_code')
         gpt_model = await getConfigValue('model')
         gpt_presets = await getConfigValue('presets')
+        gpt_temperatureStr = await getConfigValue('temperature')
+        gpt_max_tokensStr = await getConfigValue('max_tokens')
+        gpt_temperature = parseFloat(gpt_temperatureStr)
+        gpt_max_tokens = parseInt(gpt_max_tokensStr)
     } catch (error) {
         console.error('加载GPT接口设置失败！', error)
     }
@@ -37,13 +41,17 @@ loadConfigValues()
 
 async function getGPTMessage(message) {
     const requestData = {
-        app_code: gpt_app_code,
         messages: [{ "role": "user", "content": message }],
-        model: gpt_model
+        model: gpt_model,
+        temperature: gpt_temperature,
+        max_tokens: gpt_max_tokens
     }
 
     if(gpt_presets) {
         requestData.messages.unshift({ "role": "system", "content": gpt_presets })
+    }
+    if (gpt_app_code) {
+        requestData.app_code = gpt_app_code
     }
 
     const token = "Bearer " + gpt_apiKey

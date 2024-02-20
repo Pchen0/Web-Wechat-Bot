@@ -217,12 +217,14 @@ router.post('/gettyconfig', async (req, res) => {
 })
 
 router.post('/gptconfig',async(req,res) => {
-    const { apiKey,apiUrl,app_code,model,presets } = req.body
+    const { apiKey, apiUrl, app_code, model, temperature,max_tokens,presets } = req.body
     try {
         updateGPTConfig("apiKey", apiKey)
         updateGPTConfig("apiUrl", apiUrl)
         updateGPTConfig("app_code", app_code)
         updateGPTConfig("model",model)
+        updateXunfeiConfig("temperature", temperature)
+        updateXunfeiConfig("max_tokens", max_tokens)
         updateGPTConfig("presets",presets)
         res.send({status: 200,msg: '设置成功!'})
     } catch (error) {
